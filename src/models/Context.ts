@@ -1,5 +1,4 @@
-import mongoose from "../index";
-import { Document, Schema, SchemaTypes } from "mongoose";
+import mongoose, { Document, Schema, SchemaTypes } from "mongoose";
 
 type Context = Document & {
 	key: string;
@@ -20,4 +19,6 @@ const ContextSchema = new Schema(
 	{ timestamps: true }
 );
 
-export default mongoose.model<Context>("Context", ContextSchema);
+const Context = mongoose.model<Context>("Context", ContextSchema);
+
+export default Context;

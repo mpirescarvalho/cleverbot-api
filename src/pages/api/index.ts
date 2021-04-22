@@ -1,6 +1,7 @@
-import { NextApiRequest, NextApiResponse } from "next";
+import { NextApiHandler } from "next";
 import cleverbot from "cleverbot-free";
-import Context from "../../database/schemas/Context";
+import Context from "../../models/Context";
+import withMongoDB from "../../middleware/mongodb";
 
 type QueryParams = {
 	message: string;
@@ -8,7 +9,7 @@ type QueryParams = {
 	language?: string;
 };
 
-export default async (req: NextApiRequest, res: NextApiResponse) => {
+const handler: NextApiHandler = async (req, res) => {
 	const { key, message, language = "pt" } = req.query as QueryParams;
 
 	if (!message) {
@@ -23,7 +24,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 			context = query?.context || [];
 		}
 
-		console.log(context);
 		const response = await cleverbot(message, context, language);
 
 		if (key) {
@@ -43,6 +43,9 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 			response,
 		});
 	} catch (err) {
+		console.log(err);
 		return res.status(500).json({ error: err.message });
 	}
 };
+
+export default withMongoDB(handler);
