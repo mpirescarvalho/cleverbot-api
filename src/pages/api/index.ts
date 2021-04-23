@@ -2,6 +2,7 @@ import { NextApiHandler } from "next";
 import cleverbot from "cleverbot-free";
 import Context from "../../models/Context";
 import withMongoDB from "../../middleware/mongodb";
+import withErrorHandler from "../../middleware/errorHandler";
 
 type QueryParams = {
 	message: string;
@@ -48,4 +49,4 @@ const handler: NextApiHandler = async (req, res) => {
 	}
 };
 
-export default withMongoDB(handler);
+export default withErrorHandler(withMongoDB(handler));
