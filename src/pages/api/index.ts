@@ -2,7 +2,8 @@ import { NextApiHandler } from "next";
 import cleverbot from "cleverbot-free";
 import Context from "../../models/Context";
 import withMongoDB from "../../middleware/mongodb";
-import withErrorHandler from "../../middleware/errorHandler";
+import withErrorHandler from "../../middleware/error-handler";
+import { getLanguageDetector } from '../../utils/language-detector'
 
 type QueryParams = {
 	message: string;
@@ -40,8 +41,18 @@ const handler: NextApiHandler = async (req, res) => {
 			);
 		}
 
+		let responseLanguage: string | null = null
+
+		try {
+			const languageDetector = getLanguageDetector()
+			responseLanguage = await languageDetector.detect(response)
+		} catch (err) {
+			console.error('failed to detect response language', err)
+		}
+
 		return res.json({
 			response,
+			language: responseLanguage
 		});
 	} catch (err) {
 		console.log(err);
